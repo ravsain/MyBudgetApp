@@ -1,0 +1,44 @@
+budget_app/
+├── backend/
+│   ├── main.py          # Entry point (initializes app)
+│   ├── database.py      # DB connection & Session logic
+│   ├── models/          # SQL Database tables
+│   │   ├── __init__.py
+│   │   ├── users.py
+│   │   ├── budget.py    # Categories & Plans
+│   │   └── transactions.py
+│   ├── schemas/         # Pydantic validation (Data in/out)
+│   │   ├── users.py
+│   │   └── transactions.py
+│   ├── api/             # The "Controllers" (Routes)
+│   │   ├── v1/
+│   │   │   ├── endpoints/
+│   │   │   │   ├── users.py
+│   │   │   │   ├── transactions.py
+│   │   │   │   └── dashboard.py
+│   │   │   └── api.py   # Bundles all v1 routes
+│   └── core/            # Config, Security, Constants
+└── frontend/            # React/Vue source code
+
+
+frontend/src/
+├── assets/            # Global images, icons, and fonts
+├── components/        # Shared UI (Buttons, Inputs, Spinners)
+├── context/           # Global state (User Auth, Theme)
+├── features/          # THE CORE: Folder per business feature
+│   ├── dashboard/     # Charts, Summary cards
+│   ├── transactions/  # Transaction Form, History Table
+│   │   ├── api/       # API calls specific to transactions
+│   │   ├── components/# UI specific to transactions
+│   │   └── index.js   # Public API for this feature
+│   └── settings/      # Category management, Home settings
+├── hooks/             # Shared custom React hooks
+├── services/          # API client (Axios config)
+└── App.js             # Main router
+
+Why this happens (and how to scale)
+In a professional 100,000+ line app, you can't just delete the database every time you change a column because you’d lose real user data.
+
+To handle this properly as you grow, you will eventually use a tool called Alembic. Alembic keeps track of your database "versions." When you add a column like home_id, you run a command, and Alembic writes a script to "Alter" the table without deleting your data.
+
+Note: For now, deleting sql_app.db is perfectly fine and the standard way to handle early-stage development.

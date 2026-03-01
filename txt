@@ -42,3 +42,5 @@ In a professional 100,000+ line app, you can't just delete the database every ti
 To handle this properly as you grow, you will eventually use a tool called Alembic. Alembic keeps track of your database "versions." When you add a column like home_id, you run a command, and Alembic writes a script to "Alter" the table without deleting your data.
 
 Note: For now, deleting sql_app.db is perfectly fine and the standard way to handle early-stage development.
+
+ 1 march neeed to show budghet plaN ON HOME AND TRANSACTTION PAGE BOTH

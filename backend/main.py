@@ -35,12 +35,3 @@ def health_check():
         "message": "Scalable Backend is running",
         "docs": "/docs"
     }
-
-# @app.delete("/api/v1/transactions/{transaction_id}")
-# def delete_transaction(transaction_id: int, db: Session = Depends(get_db)):
-#     db_transaction = db.query(models.Transaction).filter(models.Transaction.id == transaction_id).first()
-#     if not db_transaction:
-#         raise HTTPException(status_code=404, detail="Transaction not found")
-#     db.delete(db_transaction)
-#     db.commit()
-#     return {"message": "Deleted successfully"}

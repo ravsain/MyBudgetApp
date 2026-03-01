@@ -19,7 +19,9 @@ class BudgetPlan(Base):
     __tablename__ = "budget_plans"
     id = Column(Integer, primary_key=True, index=True)
     category_id = Column(Integer, ForeignKey("categories.id"))
+    budget_period_id = Column(Integer, ForeignKey("budget_periods.id"))
     month_year = Column(String)  # e.g., "2026-03"
     planned_amount = Column(Float, default=0.0)
 
     category = relationship("Category", back_populates="plans")
+    period = relationship("BudgetPeriod", back_populates="plans")

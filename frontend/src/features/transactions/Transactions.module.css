@@ -94,6 +94,47 @@
   margin-top: 20px;
 }
 
+/* Container for the View Toggle and Settings Button */
+.viewActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+/* The Gear Button */
+.settingsBtn {
+  background: transparent;
+  border: 1px solid #cbd5e0;
+  color: #4a5568;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.settingsBtn:hover {
+  background: #f7fafc;
+  border-color: #a0aec0;
+  color: #2d3748;
+}
+
+/* Wrapper for when we swap the table for Settings */
+.settingsWrapper {
+  margin-top: 20px;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Mobile Adjustments */
 @media (max-width: 650px) {
   .header {
@@ -109,9 +150,73 @@
     width: 100%;
     text-align: center;
   }
+  
+  .viewActions {
+    flex-direction: column; /* Stack buttons on mobile */
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .settingsBtn, .viewToggleBtn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
+}
+
+/* --- Split View Layout --- */
+.splitGrid {
+  display: flex;
+  gap: 24px; /* Space between Income and Expense tables */
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.splitColumn {
+  flex: 1; /* Makes both columns equal width (50/50) */
+  min-width: 0; /* Prevents the table from pushing the layout wider than the screen */
+}
+
+.incomeHeader, .expenseHeader {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  padding-left: 5px;
+}
+
+.incomeHeader {
+  color: #27ae60;
+  border-left: 4px solid #27ae60;
+  padding-left: 10px;
+}
+
+.expenseHeader {
+  color: #e74c3c;
+  border-left: 4px solid #e74c3c;
+  padding-left: 10px;
+}
+
+.viewToggleBtn {
+  margin-top: 0px;
+  background: #ecf0f1;
+  border: 1px solid #bdc3c7;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
+.viewToggleBtn:hover {
+  background: #e2e6e7;
+}
+
+/* --- Responsive Split Adjustment --- */
+@media (max-width: 1100px) {
+  .splitGrid {
+    flex-direction: column; /* Stacks side-by-side tables on medium/small screens */
+  }
 }

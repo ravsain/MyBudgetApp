@@ -19,7 +19,7 @@ function App() {
 
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
         <header style={{ marginBottom: '30px' }}>
-          <h1 style={{ color: '#2c3e50', fontSize: '2.5rem' }}>My Budget App</h1>
+          <h1 style={{ color: '#2c3e50', fontSize: '2.5rem' }}>Monthly Budget App</h1>
           <p style={{ color: '#7f8c8d' }}>Manage your finances with precision.</p>
         </header>
 

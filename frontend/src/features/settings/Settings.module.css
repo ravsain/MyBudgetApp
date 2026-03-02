@@ -134,14 +134,37 @@
   margin-top: 20px;
 }
 
+/* Add to Settings.module.css */
+
+.deleteChipBtn {
+  background: transparent;
+  border: none;
+  color: #a0aec0; /* Light gray */
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 4px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.deleteChipBtn:hover {
+  color: #e53e3e; /* Red on hover */
+}
+
+/* Ensure the chip can fit the button nicely */
 .chip {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 8px 16px;
+  padding: 6px 10px 6px 14px; /* Adjusted padding for the button side */
   border-radius: 24px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   font-size: 0.9rem;
   color: #2d3748;
 }

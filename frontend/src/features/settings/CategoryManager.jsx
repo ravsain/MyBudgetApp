@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Settings.module.css';
 
-export const CategoryManager = ({ categories, onAddCategory }) => {
+export const CategoryManager = ({ categories, onAddCategory, onDeleteCategory }) => {
   const [newName, setNewName] = useState('');
   const [type, setType] = useState('Expense');
 
@@ -55,6 +55,15 @@ export const CategoryManager = ({ categories, onAddCategory }) => {
           <div key={cat.id} className={styles.chip}>
             <span>{cat.name}</span>
             <span className={styles.chipType}>{cat.type}</span>
+            {/* The Delete "X" Button */}
+            <button 
+              type="button"
+              className={styles.deleteChipBtn}
+              onClick={() => onDeleteCategory(cat.id)}
+              aria-label="Delete category"
+            >
+              ×
+            </button>
           </div>
         ))}
       </div>

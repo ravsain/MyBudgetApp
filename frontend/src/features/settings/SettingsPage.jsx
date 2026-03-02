@@ -23,34 +23,51 @@ export default function SettingsPage() {
 
   // 2. Updated Add Category Logic
   const handleAddCategory = async (name, type) => {
-  try {
-    const payload = { 
-      name: name, 
-      type: type // Now comes from the dropdown!
-    };
+    try {
+      const payload = { 
+        name: name, 
+        type: type // Now comes from the dropdown!
+      };
 
-    const response = await api.post('/categories/', payload);
-    setCategories(prev => [...prev, response.data]);
-  } catch (error) {
-    console.error("Error:", error.response?.data);
-  }
-   };
+      const response = await api.post('/categories/', payload);
+      setCategories(prev => [...prev, response.data]);
+    } catch (error) {
+      console.error("Error:", error.response?.data);
+    }
+  };
+   
+  const handleDeleteCategory = async (id) => {
+    // Confirm before deleting (optional but recommended)
+    if (!window.confirm("Delete this category?")) return;
 
+    try {
+      // 1. Tell the backend to delete it
+      await api.delete(`/categories/${id}`);
+      
+      // 2. Update the UI state immediately by filtering it out
+      setCategories(prev => prev.filter(cat => cat.id !== id));
+      
+      console.log(`Category ${id} deleted`);
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      alert("Failed to delete category. Make sure it's not being used by any transactions!");
+    }
+  };
 
   const handleSaveBudget = async (budgetData) => {
-  try {
-    // Since your baseURL is '.../api/v1', you only need the specific endpoint here
-    const response = await api.post('/budget-periods/', budgetData);
+    try {
+      // Since your baseURL is '.../api/v1', you only need the specific endpoint here
+      const response = await api.post('/budget-periods/', budgetData);
 
-    console.log("Successfully saved:", response.data);
-    alert(`Budget initialized for ${response.data.month_year}!`);
-    
-  } catch (error) {
-    // Axios puts the server's error message in error.response.data
-    const message = error.response?.data?.detail || "Connection to server failed";
-    console.error("Error saving budget:", message);
-    alert("Error: " + message);
-  }
+      console.log("Successfully saved:", response.data);
+      alert(`Budget initialized for ${response.data.month_year}!`);
+      
+    } catch (error) {
+      // Axios puts the server's error message in error.response.data
+      const message = error.response?.data?.detail || "Connection to server failed";
+      console.error("Error saving budget:", message);
+      alert("Error: " + message);
+    }
   };
 
   return (
@@ -66,6 +83,7 @@ export default function SettingsPage() {
       <CategoryManager 
         categories={categories} 
         onAddCategory={handleAddCategory} 
+        onDeleteCategory={handleDeleteCategory} // Pass it here
       />
     </div>
   );

@@ -31,8 +31,12 @@ export default function Transactions() {
   const incomeTransactions = transactions.filter(t => t.amount > 0);
   const expenseTransactions = transactions.filter(t => t.amount < 0);
 
-  const handleOpenModal = (type) => {
+  const handleOpenModal = async (type) => {
     setModalType(type);
+    // Refresh data right before showing the modal 
+    // so newly added categories from the Settings tab appear immediately.
+    await loadData();
+
     setIsModalOpen(true);
   };
 

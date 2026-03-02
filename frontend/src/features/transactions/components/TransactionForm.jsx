@@ -31,7 +31,7 @@ export const TransactionForm = ({ categories, onSave, type }) => {
               key={t}
               type="button"
               className={`${styles.toggleBtn} ${formData.type === t ? styles.toggleBtnActive : ''}`}
-              onClick={() => setFormData({ ...formData, type: t })}
+              onClick={() => setFormData({ ...formData, type: t, category_id: '' })} // Reset category when type changes
             >
               {t}
             </button>
@@ -73,9 +73,15 @@ export const TransactionForm = ({ categories, onSave, type }) => {
           onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
         >
           <option value="">Select a category</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
-          ))}
+          {categories
+            /* Filter: Only show categories matching the current toggle type */
+            .filter((cat) => cat.type === formData.type)
+            .map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))
+          }
         </select>
       </div>
 

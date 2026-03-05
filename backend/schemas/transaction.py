@@ -6,6 +6,7 @@ class TransactionBase(BaseModel):
     description: str
     date: date
     category_id: int
+    budget_period_id: int
 
 class TransactionCreate(TransactionBase):
     pass  # Used when creating a new transaction

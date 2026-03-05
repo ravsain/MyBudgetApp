@@ -17,6 +17,33 @@
   border: 1px solid #e2e8f0;
 }
 
+/* The background dimming layer */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* High z-index is critical */
+}
+
+/* The white box containing the BudgetPlanner */
+.modalContent {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
 .card h3 {
   margin-top: 0;
   margin-bottom: 20px;
@@ -178,6 +205,37 @@
   border-radius: 4px;
   color: #718096;
 }
+
+.plannerTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.plannerTable th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  color: #4a5568;
+  font-size: 0.85rem;
+}
+
+.plannerTable td {
+  padding: 12px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.incomeTag, .expenseTag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.incomeTag { background: #dcfce7; color: #166534; }
+.expenseTag { background: #fee2e2; color: #991b1b; }
+
+
 
 /* Mobile Responsiveness for Small Screens */
 @media (max-width: 600px) {

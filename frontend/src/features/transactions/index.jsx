@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getTransactions, getCategories, postTransaction, deleteTransaction } from './api/transactionApi';
 import { TransactionTable } from './components/TransactionTable';
 import { TransactionForm } from './components/TransactionForm';
+import api from '../../services/api';
 import Modal from '../../components/Modal'; // Import the global reusable modal
 import styles from './Transactions.module.css';
 import SettingsPage from '../settings/SettingsPage'; // Adjust path as needed
@@ -9,17 +10,34 @@ import SettingsPage from '../settings/SettingsPage'; // Adjust path as needed
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [activePeriod, setActivePeriod] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('Actual'); 
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const [viewMode, setViewMode] = useState('combined');
   const [activeTab, setActiveTab] = useState('transactions'); // 'transactions' or 'settings'
+  
 
   const loadData = async () => {
     try {
-      const [tRes, cRes] = await Promise.all([getTransactions(), getCategories()]);
-      setTransactions(tRes.data);
+      // 1. First, get the categories and the latest active period
+      const [cRes, pRes] = await Promise.all([
+        getCategories(),
+        api.get('/budget-periods/latest') // Assuming you have this endpoint
+      ]);
+      
       setCategories(cRes.data);
+      const currentPeriod = pRes.data;
+      setActivePeriod(currentPeriod);
+
+      // 2. Now fetch transactions specifically for THIS period
+      if (currentPeriod?.id) {
+        const tRes = await api.get(`/transactions/transactions/${currentPeriod.id}`);
+        setTransactions(tRes.data);
+      } else {
+        // If no period exists, maybe show all or nothing
+        setTransactions([]);
+      }
     } catch (error) {
       console.error("Failed to load data", error);
     }
@@ -31,23 +49,38 @@ export default function Transactions() {
   const incomeTransactions = transactions.filter(t => t.amount > 0);
   const expenseTransactions = transactions.filter(t => t.amount < 0);
 
-  const handleOpenModal = async (type) => {
-    setModalType(type);
-    // Refresh data right before showing the modal 
-    // so newly added categories from the Settings tab appear immediately.
-    await loadData();
 
+  const handleOpenModal = async () => {
+    // Always set to Actual since Planned is moving to Settings
+    setModalType('Actual'); 
+    
+    // Refresh data so new categories appear immediately
+    await loadData(); 
+    
     setIsModalOpen(true);
   };
 
   const handleSave = async (newData) => {
+    // console.log("Active period:", activePeriod);  // ← DEBUG!
+    // console.log("Period ID:", activePeriod?.id);  // ← CRITICAL!
+    if (!activePeriod) {
+      alert("Please initialize a budget month in Settings first!");
+      return;
+    }
+
     try {
-      await postTransaction({ ...newData, is_planned: modalType === 'Planned' });
+      const payload = { 
+        ...newData, 
+        is_planned: false,
+        budget_period_id: activePeriod.id // THE SOLID LINK
+      };
+      
+      await postTransaction(payload);
       setIsModalOpen(false); 
-      loadData(); 
-      showToast(`${modalType} Transaction added!`, newData.amount > 0 ? 'income' : 'expense');
+      await loadData(); 
+      showToast("Transaction added!", newData.amount > 0 ? 'income' : 'expense');
     } catch (error) {
-      alert("Error saving transaction");
+      console.error("Save error:", error);
     }
   };
 
@@ -55,9 +88,10 @@ export default function Transactions() {
     if (window.confirm("Delete this transaction?")) {
       try {
         await deleteTransaction(id);
-        loadData();
+        await loadData();
         showToast("Deleted successfully", "expense");
       } catch (error) {
+        console.error("Delete error:", error);
         alert("Delete failed");
       }
     }
@@ -106,8 +140,8 @@ export default function Transactions() {
         {/* Only show "Add" buttons if we are on the transactions tab */}
         {activeTab === 'transactions' && (
           <div className={styles.buttonGroup}>
-            <button className={styles.secondaryBtn} onClick={() => handleOpenModal('Planned')}>+ Add Planned</button>
-            <button className={styles.primaryBtn} onClick={() => handleOpenModal('Actual')}>+ Add Actual</button>
+            {/* <button className={styles.secondaryBtn} onClick={() => handleOpenModal('Planned')}>+ Add Planned</button> */}
+            <button className={styles.primaryBtn} onClick={() => handleOpenModal('Actual')}>💸 New Log</button>
           </div>
         )}
       </header>
@@ -124,12 +158,13 @@ export default function Transactions() {
       <Modal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        title={`Add ${modalType} Transaction`}
+        title="Add New Transaction" 
       >
         <TransactionForm 
           categories={categories} 
           onSave={handleSave} 
-          type={modalType} 
+          type="Actual" 
+          currentPeriodId={activePeriod?.id}
         />
       </Modal>
 
@@ -168,8 +203,11 @@ export default function Transactions() {
         ) : (
           /* --- SETTINGS VIEW --- */
           <div className={styles.settingsWrapper}>
-            {/* Dropping the official SettingsPage here */}
-            <SettingsPage />
+            {/* PASS THE REFRESH FUNCTION HERE.
+                When SettingsPage updates the month, it calls loadData() 
+                to ensure the Transaction list is updated too. 
+            */}
+            <SettingsPage onMonthChange={loadData} />
           </div>
         )}
       </main>

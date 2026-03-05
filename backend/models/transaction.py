@@ -12,6 +12,8 @@ class Transaction(Base):
     amount = Column(Float)
     description = Column(String)
     date = Column(Date)
+    budget_period_id = Column(Integer, ForeignKey("budget_periods.id"), index=True) # Optional link to a budget period for easier querying
 
     category = relationship("Category", back_populates="transactions")
     user = relationship("User", back_populates="transactions")
+    budget_period = relationship("BudgetPeriod", back_populates="transactions")

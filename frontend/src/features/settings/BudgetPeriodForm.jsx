@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Added useEffect
 import styles from './Settings.module.css';
 
-export const BudgetPeriodForm = ({ onSave }) => {
-  // 1. Initialize state with keys that match your Python Schemas
+// Added initialData to the destructuring
+export const BudgetPeriodForm = ({ onSave, onOpenPlanning, hasActivePeriod, initialData }) => {
   const [formData, setFormData] = useState({
     month_year: '',
     starting_balance: 0,
@@ -10,10 +10,28 @@ export const BudgetPeriodForm = ({ onSave }) => {
     end_date: ''
   });
 
-  // 2. Handle input changes dynamically
+  // 1. THE WATCHER: Populates the form when editing or clears it when 'Start New' is clicked
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        month_year: initialData.month_year || '',
+        starting_balance: initialData.starting_balance || 0,
+        start_date: initialData.start_date || '',
+        end_date: initialData.end_date || ''
+      });
+    } else {
+      // Reset to empty for "Start New Month"
+      setFormData({
+        month_year: '',
+        starting_balance: 0,
+        start_date: '',
+        end_date: ''
+      });
+    }
+  }, [initialData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Convert balance to a number so FastAPI doesn't complain
     const finalValue = name === 'starting_balance' ? parseFloat(value) || 0 : value;
     
     setFormData(prev => ({
@@ -22,7 +40,6 @@ export const BudgetPeriodForm = ({ onSave }) => {
     }));
   };
 
-  // 3. Trigger the onSave prop when the button is clicked
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(formData);
@@ -30,7 +47,9 @@ export const BudgetPeriodForm = ({ onSave }) => {
 
   return (
     <div className={styles.card}>
-      <h3>Monthly Budget Setup</h3>
+      {/* 2. DYNAMIC TITLE: Changes based on mode */}
+      <h3>{initialData ? "Edit Budget Setup" : "Monthly Budget Setup"}</h3>
+      
       <form onSubmit={handleSubmit}>
         <div className={styles.grid}>
           <div className={styles.field}>
@@ -40,6 +59,7 @@ export const BudgetPeriodForm = ({ onSave }) => {
               type="number" 
               placeholder="50000" 
               className={styles.input}
+              value={formData.starting_balance} // 3. CONTROLLED INPUT
               onChange={handleChange}
             />
           </div>
@@ -49,6 +69,7 @@ export const BudgetPeriodForm = ({ onSave }) => {
               name="month_year"
               type="month" 
               className={styles.input}
+              value={formData.month_year} // 3. CONTROLLED INPUT
               onChange={handleChange}
             />
           </div>
@@ -58,6 +79,7 @@ export const BudgetPeriodForm = ({ onSave }) => {
               name="start_date"
               type="date" 
               className={styles.input}
+              value={formData.start_date} // 3. CONTROLLED INPUT
               onChange={handleChange}
             />
           </div>
@@ -67,11 +89,28 @@ export const BudgetPeriodForm = ({ onSave }) => {
               name="end_date"
               type="date" 
               className={styles.input}
+              value={formData.end_date} // 3. CONTROLLED INPUT
               onChange={handleChange}
             />
           </div>
         </div>
-        <button type="submit" className={styles.saveBtn}>Initialize Month</button>
+
+        <div className={styles.buttonRow}>
+          <button type="submit" className={styles.saveBtn}>
+            {/* 4. DYNAMIC BUTTON TEXT */}
+            {initialData ? "Update Setup" : "Initialize Month"}
+          </button>
+          
+          <button 
+            type="button" 
+            className={styles.planBtn} 
+            onClick={onOpenPlanning}
+            disabled={!hasActivePeriod}
+            title={!hasActivePeriod ? "Initialize the month first" : ""}
+          >
+            📊 Set Planned Budget
+          </button>
+        </div>
       </form>
     </div>
   );

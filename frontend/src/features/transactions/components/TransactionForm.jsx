@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
 import styles from './TransactionForm.module.css';
 
-export const TransactionForm = ({ categories, onSave, type }) => {
+export const TransactionForm = ({ categories, onSave, type, currentPeriodId }) => {
   const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0], // Defaults to today
+    date: new Date().toISOString().split('T')[0],
     amount: '',
     description: '',
     category_id: '',
-    type: 'Expense' // Default type
+    type: 'Expense',
+    budget_period_id: currentPeriodId // Initialize with the active period
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Professional touch: convert amount to number and apply sign based on type
-    const finalAmount = formData.type === 'Expense' 
-      ? -Math.abs(parseFloat(formData.amount)) 
-      : Math.abs(parseFloat(formData.amount));
+    
+    // Ensure the ID is attached even if the state hasn't updated
+    const submissionData = {
+      ...formData,
+      amount: formData.type === 'Expense' 
+        ? -Math.abs(parseFloat(formData.amount)) 
+        : Math.abs(parseFloat(formData.amount)),
+      budget_period_id: currentPeriodId // The "Solid Link"
+    };
 
-    onSave({ ...formData, amount: finalAmount });
+    onSave(submissionData);
   };
 
   return (

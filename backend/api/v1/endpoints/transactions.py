@@ -29,3 +29,9 @@ def delete_transaction(transaction_id: int, db: Session = Depends(get_db)):
     db.delete(db_transaction)
     db.commit()
     return {"message": "Transaction deleted successfully"}
+
+@router.get("/transactions/{period_id}")
+def get_transactions_by_period(period_id: int, db: Session = Depends(get_db)):
+    return db.query(models.Transaction).filter(
+        models.Transaction.budget_period_id == period_id
+    ).all()

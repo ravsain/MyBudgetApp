@@ -14,3 +14,4 @@ class BudgetPeriod(Base):
 
     # Relationship to the plans
     plans = relationship("BudgetPlan", back_populates="period")
+    transactions = relationship("Transaction", back_populates="budget_period")
